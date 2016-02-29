@@ -9,7 +9,7 @@ fid3 = fopen(labels_path, 'r');
 
 pair_data_1 = textscan(fid1, '%s %d');
 pair_data_2 = textscan(fid2, '%s %d');
-labels = textscan(fid3, '%d');
+labels = textscan(fid3, '%s %d');
 
 num_pair_data_1 = length(pair_data_1{2});
 num_pair_data_2 = length(pair_data_2{2});
@@ -19,10 +19,10 @@ num_pair_different = 0;
 
 if num_pair_data_1 == num_pair_data_2 && num_pair_data_2 == num_labels
     for i = 1:num_pair_data_1
-        if pair_data_1{2}(i) == pair_data_2{2}(i) && labels{1}(i) == 1  
+        if pair_data_1{2}(i) == pair_data_2{2}(i) && labels{2}(i) == 1  
             num_pair_identical = num_pair_identical + 1;
             continue;
-        elseif pair_data_1{2}(i) ~= pair_data_2{2}(i) && labels{1}(i) == 0
+        elseif pair_data_1{2}(i) ~= pair_data_2{2}(i) && labels{2}(i) == 0
             num_pair_different = num_pair_different + 1;
             continue;
         else

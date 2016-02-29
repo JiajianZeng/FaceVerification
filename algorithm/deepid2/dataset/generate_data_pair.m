@@ -123,7 +123,7 @@ fid3 = fopen('labels.txt', 'a');
 for i = 1:length(pair1)
     fprintf(fid1, '%s %d\r\n', image_list{1}{pair1(i)}, image_list{2}(pair1(i)));
     fprintf(fid2, '%s %d\r\n', image_list{1}{pair2(i)}, image_list{2}(pair2(i)));
-    fprintf(fid3, '%d\r\n', labels(i));
+    fprintf(fid3, '%s %d\r\n', image_list{1}{1}, labels(i));
 end
 fclose(image_list_file);
 fclose(fid1);
