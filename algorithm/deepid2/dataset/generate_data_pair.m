@@ -116,14 +116,14 @@ pair1 = pair1(idx);
 pair2 = pair2(idx);
 labels = labels(idx);
 
-fid1 = fopen('data_pair_1.txt', 'a');
-fid2 = fopen('data_pair_2.txt', 'a');
-fid3 = fopen('labels.txt', 'a');
+fid1 = fopen('data_pair_val_1.txt', 'a');
+fid2 = fopen('data_pair_val_2.txt', 'a');
+fid3 = fopen('labels_val.txt', 'a');
 
 for i = 1:length(pair1)
     fprintf(fid1, '%s %d\r\n', image_list{1}{pair1(i)}, image_list{2}(pair1(i)));
     fprintf(fid2, '%s %d\r\n', image_list{1}{pair2(i)}, image_list{2}(pair2(i)));
-    fprintf(fid3, '%s %d\r\n', image_list{1}{1}, labels(i));
+    fprintf(fid3, '%s %d\r\n', '0000045/1.jpg', labels(i));
 end
 fclose(image_list_file);
 fclose(fid1);

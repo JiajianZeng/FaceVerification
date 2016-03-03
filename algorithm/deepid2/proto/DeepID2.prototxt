@@ -84,6 +84,11 @@ layer {
   }
 }
 layer {
+	name: "silence"
+	type: "Silence"
+	bottom: "dummydata"
+}
+layer {
   name: "conv1"
   type: "Convolution"
   bottom: "data1"
@@ -287,7 +292,7 @@ layer {
 	bottom: "ip2"
 	top: "fc1"
 	eltwise_param {
-		eltwise_op: 1
+		operation: SUM
 	}
 }
 layer {
@@ -310,7 +315,7 @@ layer {
     name: "fc1softmax_b"
   }
   inner_product_param {
-    num_output: 423
+    num_output: 10575
     weight_filler {
       type: "xavier"
     }
@@ -529,7 +534,7 @@ layer {
 	bottom: "ip2_p"
 	top: "fc1_p"
 	eltwise_param{
-		eltwise_op: 1
+		operation: SUM
 	}
 }
 layer {
@@ -552,7 +557,7 @@ layer {
     name: "fc1softmax_b"
   }
   inner_product_param {
-    num_output: 423
+    num_output: 10575
     weight_filler {
       type: "xavier"
     }
