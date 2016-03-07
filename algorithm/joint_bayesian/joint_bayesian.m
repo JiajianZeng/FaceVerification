@@ -18,7 +18,7 @@ count = 0;
 number_buff = zeros(1000, 1);
 % preprocess
 for i = 1:num_class
-    instances_in_each_class{i} = X(lables == i, :);
+    instances_in_each_class{i} = X(labels == i, :);
     num_instance = size(instances_in_each_class{i}, 1);
     if num_instance > 1
         count = count + num_instance;
@@ -80,7 +80,7 @@ for i = 1:500
     for k = 1:num_class
         num_instance = size(instances_in_each_class{k}, 1);
         u(:, k) = sum(SuFG{num_instance} * instances_in_each_class{k}', 2);
-        w(:, j + num_instance - 1) = bsxfun(@plus, instances_in_each_class{k}', sum(SwG(num_instance) * instances_in_each_class{k}', 2));
+        w(:, j:j + num_instance - 1) = bsxfun(@plus, instances_in_each_class{k}', sum(SwG{num_instance} * instances_in_each_class{k}', 2));
         j = j + num_instance;
     end
     Su = cov(u');
