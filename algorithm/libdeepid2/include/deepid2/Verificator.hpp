@@ -12,6 +12,7 @@ using cv::Mat;
 using caffe::Blob;
 using std::vector;
 using std::string;
+using boost::shared_ptr;
 
 class Verificator {
  public:
@@ -30,8 +31,8 @@ class Verificator {
 
  protected:
   void set_mean(const string& mean_file);
-  void wrap_input_layer(vector<vector<Mat*>* >& input_channels_vec);
-  void preprocess(const Mat& img, vector<Mat>* input_channels, Blob<float>* input_layer);
+  void wrap_input_layer(vector<shared_ptr<vector<shared_ptr<Mat> > > >& input_channels_vec);
+  void preprocess(const Mat& img, shared_ptr<vector<Mat> > input_channels, Blob<float>* input_layer);
   void extract_feature(const Mat& image1, const Mat& image2, vector<string> feature_blob_names, 
       Mat* feature1, Mat* feature2);
 };

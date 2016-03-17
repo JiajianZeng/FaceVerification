@@ -15,6 +15,7 @@ using caffe::Net;
 using caffe::Blob;
 using caffe::BlobProto;
 using std::ofstream;
+using boost::shared_ptr;
 
 Verificator::Verificator(const string& param_file,
                          const string& trained_model_file,
@@ -55,18 +56,19 @@ void Verificator::set_mean(const string& mean_file) {
   mean_ = Mat(sz, mean.type(), channel_mean);
 }
 
-// 
-void Verificator::wrap_input_layer(vector<vector<Mat*>* >& input_channels_vec) {
+/**
+* point single Mat channel to input layer, and when preprocess is done, the data will be filled
+*/
+void Verificator::wrap_input_layer(vector<shared_ptr<vector<shared_ptr<Mat> > > >& input_channels_vec) {
   Net<float>* net = fe_->get_net();
   for(int i = 0;i < net->input_blobs().size();i++){
-    vector<Mat*>* input_channels = new vector<Mat*>();
-
+    shared_ptr<vector<shared_ptr<Mat> > > input_channels(new vector<shared_ptr<Mat> >() );
     Blob<float>* input_layer = net->input_blobs()[i];
     int width = input_layer->width();
     int height = input_layer->height();
     float* input_data = input_layer->mutable_cpu_data();
     for(int j = 0;j < input_layer->channels();j++){
-      Mat* channel = new Mat(height, width, CV_32FC1, input_data);
+      shared_ptr<Mat> channel(new Mat(height, width, CV_32FC1, input_data));
       input_channels->push_back(channel);
       input_data += width * height;
     }
@@ -74,7 +76,7 @@ void Verificator::wrap_input_layer(vector<vector<Mat*>* >& input_channels_vec) {
   }  
 }
 
-void Verificator::preprocess(const Mat& img, vector<Mat>* input_channels, Blob<float>* input_layer){
+void Verificator::preprocess(const Mat& img, shared_ptr<vector<Mat> > input_channels, Blob<float>* input_layer){
   Mat sample;
   int num_channels = input_channels->size();
   /* convert the input image to the input image format of the network */
@@ -127,14 +129,14 @@ void Verificator::extract_feature(const Mat& image1, const Mat& image2, vector<s
   img_vec.push_back(img2);
 
   /* wrap input layer */
-  vector<vector<Mat*>* >  input_channels_vec;
+  vector<shared_ptr<vector<shared_ptr<Mat> > > >  input_channels_vec;
   wrap_input_layer(input_channels_vec);
 
   /* preprocess the source image and copy data to input layer of the layer */
   Net<float>* net = fe_->get_net();
   for(int i = 0;i < input_channels_vec.size();i++){
-    vector<Mat*>* input_channels = input_channels_vec[i];
-    vector<Mat>* v = new vector<Mat>();
+    shared_ptr<vector<shared_ptr<Mat> > > input_channels = input_channels_vec[i];
+    shared_ptr<vector<Mat> > v(new vector<Mat>());
     for(int j = 0;j < input_channels->size();j++)
       v->push_back(*input_channels->at(j));
     preprocess(img_vec[i], v, net->input_blobs()[i]);
