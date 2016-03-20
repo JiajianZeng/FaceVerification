@@ -5,7 +5,7 @@ CFLAGS = -fPIC -g
 # linking flags
 LDFLAGS = -shared
 # rm command
-RM = rm -f
+RM = rm -fv
 # target library
 TARGET_LIB = libdeepid2.so
 
@@ -25,6 +25,7 @@ LIBRARIES = -lcaffe \
             -lboost_system \
             -L./lib \
 
+      
 .PHONY: all
 all:$(TARGET_LIB)
 

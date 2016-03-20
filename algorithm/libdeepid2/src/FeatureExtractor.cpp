@@ -1,9 +1,7 @@
 #include <string>
 #include <vector>
 
-#include "caffe/blob.hpp"
-#include "caffe/common.hpp"
-#include "caffe/net.hpp"
+#include "caffe/caffe.hpp"
 #include "deepid2/FeatureExtractor.hpp"
 
 using std::string;
@@ -13,11 +11,15 @@ using caffe::Caffe;
 using std::vector;
 using boost::shared_ptr;
 
+/**
+* parameter param_file, the definition file of the net structure
+* parameter trained_model_file, the model file of the net 
+*/
 FeatureExtractor::FeatureExtractor(const string& param_file, const string& trained_model_file,
       bool use_gpu, int device_id) {
   if(use_gpu && device_id >= 0){
+    Caffe::set_mode(Caffe::GPU);    
     Caffe::SetDevice(device_id);
-    Caffe::set_mode(Caffe::GPU);
   }else{
     Caffe::set_mode(Caffe::CPU);
   }
@@ -30,8 +32,14 @@ FeatureExtractor::~FeatureExtractor() {
   delete net_;
 }
 
+/**
+* parameter feature_blob_names, holds the blob names which we want to extract feature from
+* parameter net_input_blobs, holds the data of the input layer of the net
+* parameter feature_dim_vecs, when this function return, will store dimension of feature extracted from each layer
+* parameter feature_blob_data, holds the data extracted from each layer
+*/
 void FeatureExtractor::extract(vector<string> feature_blob_names, vector<Blob<float>* > net_input_blobs, vector<int>& feature_dim_vecs,
-      vector<vector<const float*> >& feature_blob_data) {
+      vector<vector<float*> >& feature_blob_data) {
   vector<shared_ptr<Blob<float> > > feature_blobs;
   int num_features = feature_blob_names.size();
   net_->Forward(net_input_blobs);
@@ -39,12 +47,12 @@ void FeatureExtractor::extract(vector<string> feature_blob_names, vector<Blob<fl
   for(int i = 0;i < num_features;i++){
     feature_blobs.push_back(net_->blob_by_name(feature_blob_names[i]));
   }
-
+  // parse data 
   parse_blob_data(feature_blobs, feature_dim_vecs, feature_blob_data);
 }
 
 void FeatureExtractor::parse_blob_data(vector<shared_ptr<Blob<float> > > feature_blobs, vector<int>& feature_dim_vecs,
-      vector<vector<const float*> >& feature_blob_data) {
+      vector<vector<float*> >& feature_blob_data) {
   int num_blobs = feature_blobs.size();
 
   for(int i = 0;i < num_blobs;i++){
@@ -53,9 +61,9 @@ void FeatureExtractor::parse_blob_data(vector<shared_ptr<Blob<float> > > feature
     int dim_features = feature_blob->count() / batch_size;
     
     feature_dim_vecs.push_back(dim_features);
-    
+    // store data
     for(int n = 0;n < batch_size;n++){
-      feature_blob_data[i].push_back(feature_blob->cpu_data() + feature_blob->offset(n));
+      feature_blob_data[i].push_back(feature_blob->mutable_cpu_data() + feature_blob->offset(n));
     }
   }
 }

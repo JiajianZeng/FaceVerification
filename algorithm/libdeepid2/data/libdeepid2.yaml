@@ -1,0 +1,17 @@
+%YAML:1.0
+
+param_file: "/share/jiajian/caffe-fast-rcnn/models/deepid2/DeepID2_deploy.prototxt"
+trained_model_file: "/share/jiajian/caffe-fast-rcnn/examples/deepid2/casia-webface-fine-tune-2/snapshot_iter_290000.caffemodel"
+use_gpu: true
+device_id: 2
+
+yaml_file_A: "/home/zengjiajian/FaceVerification2/A.yaml"
+matrix_A_name: "A"
+yaml_file_G: "/home/zengjiajian/FaceVerification2/G.yaml"
+matrix_G_name: "G"
+
+svm_model_file: "/home/zengjiajian/FaceVerification2/svm_model.yaml"
+mean_file: "/share/jiajian/caffe-fast-rcnn/data/casia-webface/casia_train_lmdb_1.binaryproto"
+
+feature_mean_file: "/home/zengjiajian/FaceVerification2/train_mean.yaml"
+matrix_feature_mean_name: "train_mean"

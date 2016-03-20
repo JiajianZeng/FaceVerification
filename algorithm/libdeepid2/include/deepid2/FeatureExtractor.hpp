@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "caffe/blob.hpp"
-#include "caffe/common.hpp"
-#include "caffe/net.hpp"
+#include "caffe/caffe.hpp"
 
 using std::string;
 using std::vector;
@@ -21,7 +19,7 @@ class FeatureExtractor {
   ~FeatureExtractor();
 
   void extract(vector<string> feature_blob_names, vector<Blob<float>* > net_input_blobs, vector<int>& feature_dim_vecs,
-      vector<vector<const float*> >& feature_blob_data);
+      vector<vector<float*> >& feature_blob_data);
 
   Net<float>* get_net();
 
@@ -30,6 +28,6 @@ class FeatureExtractor {
 
  protected:
   void parse_blob_data(vector<shared_ptr<Blob<float> > > feature_blobs, vector<int>& feature_dim_vecs, 
-      vector<vector<const float*> >& feature_blob_data);
+      vector<vector<float*> >& feature_blob_data);
 };
 #endif
