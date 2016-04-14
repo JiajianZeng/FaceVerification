@@ -22,6 +22,8 @@ INCLUDES =  -I/usr/local/include/opencv2 \
 # link library
 LIBRARIES = -lcaffe \
             -lopencv_core \
+            -lopencv_objdetect \
+            -lopencv_imgproc \
             -lboost_system \
             -L./lib \
 

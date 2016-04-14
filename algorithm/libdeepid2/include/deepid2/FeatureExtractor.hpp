@@ -18,7 +18,7 @@ class FeatureExtractor {
       bool use_gpu = false, int device_id = -1);
   ~FeatureExtractor();
 
-  void extract(vector<string> feature_blob_names, vector<Blob<float>* > net_input_blobs, vector<int>& feature_dim_vecs,
+  void extract(const vector<string>& feature_blob_names, const vector<Blob<float>* >& net_input_blobs, vector<int>& feature_dim_vecs,
       vector<vector<float*> >& feature_blob_data);
 
   Net<float>* get_net();
@@ -27,7 +27,8 @@ class FeatureExtractor {
   Net<float>* net_;   
 
  protected:
-  void parse_blob_data(vector<shared_ptr<Blob<float> > > feature_blobs, vector<int>& feature_dim_vecs, 
+  void parse_blob_data(const vector<shared_ptr<Blob<float> > >& feature_blobs, vector<int>& feature_dim_vecs, 
       vector<vector<float*> >& feature_blob_data);
 };
+
 #endif

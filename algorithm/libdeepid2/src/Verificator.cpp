@@ -4,6 +4,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
+#include <fstream>
 
 #include "deepid2/Verificator.hpp"
 #include "caffe/caffe.hpp"
@@ -29,8 +30,6 @@ const string Verificator::matrix_A_name_("matrix_A_name");
 const string Verificator::matrix_G_name_("matrix_G_name");
 const string Verificator::svm_model_file_name_("svm_model_file");
 const string Verificator::mean_file_name_("mean_file");
-const string Verificator::feature_mean_file_name_("feature_mean_file");
-const string Verificator::matrix_feature_mean_name_("matrix_feature_mean_name");
 
 Verificator::Verificator(const string& yaml_config_file) {
   FileStorage fs(yaml_config_file.c_str(), FileStorage::READ);
@@ -44,8 +43,6 @@ Verificator::Verificator(const string& yaml_config_file) {
   string matrix_G_name;
   string svm_model_file;
   string mean_file;
-  string feature_mean_file;
-  string matrix_feature_mean_name;
   
   // deserialize
   fs[param_file_name_.c_str()] >> param_file;
@@ -58,20 +55,13 @@ Verificator::Verificator(const string& yaml_config_file) {
   fs[matrix_G_name_.c_str()] >> matrix_G_name;
   fs[svm_model_file_name_.c_str()] >> svm_model_file;
   fs[mean_file_name_.c_str()] >> mean_file;
-  fs[feature_mean_file_name_.c_str()] >> feature_mean_file;
-  fs[matrix_feature_mean_name_.c_str()] >> matrix_feature_mean_name;
 
   // initialize
   fe_ = new FeatureExtractor(param_file, trained_model_file, use_gpu, device_id);
   jb_ = new JointBayesian(yaml_file_A, matrix_A_name, yaml_file_G, matrix_G_name);
   svm_ = new SvmClassifier(svm_model_file);
   set_mean(mean_file);
-  
-  FileStorage fs_feature_mean(feature_mean_file.c_str(), FileStorage::READ);
-  fs_feature_mean[matrix_feature_mean_name.c_str()] >> feature_mean_;
-  feature_mean_ = feature_mean_.t();
 
-  fs_feature_mean.release();  
   fs.release();
 }
 
@@ -98,13 +88,7 @@ void Verificator::set_mean(const string& mean_file) {
   }
 
   /* merge the seprate channels into a single image */
-  Mat mean;
-  cv::merge(channels, mean);
-  
-  /* compute the global mean pixel value and create a mean image filled with this value */
-  cv::Scalar channel_mean = cv::mean(mean);
-  cv::Size sz(mean_blob.width(), mean_blob.height());
-  mean_ = Mat(sz, mean.type(), channel_mean);
+  cv::merge(channels, mean_);
 }
 
 /**
@@ -162,11 +146,11 @@ void Verificator::preprocess(const Mat& img, shared_ptr<vector<Mat> > input_chan
   cv::subtract(sample_float, mean_, sample_normalized);
   
   /* write the separate BGR planes directly to the input layer of the network */
-  cv::split(sample_normalized, *input_channels);
-  
+  //cv::split(sample_normalized, *input_channels);
+  cv::split(sample_float, *input_channels);
 }
 
-void Verificator::extract_feature(const Mat& image1, const Mat& image2, vector<string> feature_blob_names, 
+void Verificator::extract_feature(const Mat& image1, const Mat& image2, const vector<string>& feature_blob_names, 
       Mat& feature1, Mat& feature2){
   /* prepare the source image for extracting feature*/
   Mat img1, img2;
@@ -207,8 +191,23 @@ void Verificator::extract_feature(const Mat& image1, const Mat& image2, vector<s
   vector<int> feature_dim_vecs;
   fe_->extract(feature_blob_names, net_input_blobs, feature_dim_vecs, feature_blob_data);
 
+  // col vector
   feature1 = Mat(feature_dim_vecs[0], 1, CV_32FC1, feature_blob_data[0][0]);
+  /* debug
+  std::ofstream of("feature1.txt");
+  for(int i = 0;i < feature_dim_vecs[0];i++)
+    of << feature1.at<float>(i) << ",";
+  of.close();
+  end debug */
+  
+  // col vector
   feature2 = Mat(feature_dim_vecs[1], 1, CV_32FC1, feature_blob_data[1][0]);
+  /* debug
+  std::ofstream of1("feature2.txt");
+  for(int i = 0;i < feature_dim_vecs[1];i++)
+    of1 << feature2.at<float>(i) << ",";
+  of1.close();
+  end debug */
 }
 
 FeatureExtractor* Verificator::get_feature_extractor() {
@@ -223,30 +222,13 @@ SvmClassifier* Verificator::get_svm_classifier() {
   return svm_;
 }
 
-bool Verificator::verificate(const Mat& image1, const Mat& image2, vector<string> feature_blob_names, 
+bool Verificator::verificate(const Mat& image1, const Mat& image2, const vector<string>& feature_blob_names, 
       Mat& feature1, Mat& feature2) {
   extract_feature(image1, image2, feature_blob_names, feature1, feature2);
-  // sqrt
-  cv::sqrt(feature1, feature1);
-  cv::sqrt(feature2, feature2);
-  // range normalize [0,1]
+  // norm normalize 
   cv::normalize(feature1, feature1, 1, 0, cv::NORM_L1);
   cv::normalize(feature2, feature2, 1, 0, cv::NORM_L1);
-  // make sure feature mean is zero
-  feature1 = feature1 - feature_mean_;
-  feature2 = feature2 - feature_mean_;
-  // compute joint bayesian distance
-  float distance = jb_->distance(feature1, feature2);
-  std::cout << "distance = " << distance << std::endl;
-  
+  // compute Euclidean distance
+  double distance = cv::norm(feature1, feature2);
   return svm_->classify(distance);
 }
-
-
-
-
-
-
-
-
-

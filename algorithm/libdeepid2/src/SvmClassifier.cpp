@@ -49,11 +49,13 @@ SvmClassifier::SvmClassifier(const string& svm_model_file) {
   SVs_ = SVs_.t();
 
   weighted_sum_ = sv_coef_.dot(SVs_);
+  std::cout << "weighted_sum = " << weighted_sum_ << std::endl;
+  std::cout << "rho = " << rho_.at<float>(0) << std::endl;
 
   fs_svm_model.release();
 }
 
 bool SvmClassifier::classify(float distance) {
-  return distance > 0;
-  //return distance * weighted_sum_ - rho_.at<float>(0) > 0;
+  // using linear kernel here
+  return distance * weighted_sum_ - rho_.at<float>(0) > 0;
 }

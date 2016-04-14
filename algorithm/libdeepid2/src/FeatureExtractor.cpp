@@ -38,24 +38,21 @@ FeatureExtractor::~FeatureExtractor() {
 * parameter feature_dim_vecs, when this function return, will store dimension of feature extracted from each layer
 * parameter feature_blob_data, holds the data extracted from each layer
 */
-void FeatureExtractor::extract(vector<string> feature_blob_names, vector<Blob<float>* > net_input_blobs, vector<int>& feature_dim_vecs,
-      vector<vector<float*> >& feature_blob_data) {
-  vector<shared_ptr<Blob<float> > > feature_blobs;
-  int num_features = feature_blob_names.size();
+void FeatureExtractor::extract(const vector<string>& feature_blob_names, const vector<Blob<float>* >& net_input_blobs, 
+    vector<int>& feature_dim_vecs, vector<vector<float*> >& feature_blob_data) {
   net_->Forward(net_input_blobs);
-
-  for(int i = 0;i < num_features;i++){
+  
+  vector<shared_ptr<Blob<float> > > feature_blobs;
+  for(int i = 0;i < feature_blob_names.size();i++){
     feature_blobs.push_back(net_->blob_by_name(feature_blob_names[i]));
   }
   // parse data 
   parse_blob_data(feature_blobs, feature_dim_vecs, feature_blob_data);
 }
 
-void FeatureExtractor::parse_blob_data(vector<shared_ptr<Blob<float> > > feature_blobs, vector<int>& feature_dim_vecs,
+void FeatureExtractor::parse_blob_data(const vector<shared_ptr<Blob<float> > >& feature_blobs, vector<int>& feature_dim_vecs,
       vector<vector<float*> >& feature_blob_data) {
-  int num_blobs = feature_blobs.size();
-
-  for(int i = 0;i < num_blobs;i++){
+  for(int i = 0;i < feature_blobs.size();i++){
     const shared_ptr<Blob<float> > feature_blob = feature_blobs[i];
     int batch_size = feature_blob->num();
     int dim_features = feature_blob->count() / batch_size;

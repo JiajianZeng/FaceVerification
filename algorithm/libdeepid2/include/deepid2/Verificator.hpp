@@ -20,7 +20,7 @@ class Verificator {
  public:
   Verificator(const string& yaml_config_file);
   ~Verificator();
-  bool verificate(const Mat& image1, const Mat& image2, vector<string> feature_blob_names, 
+  bool verificate(const Mat& image1, const Mat& image2, const vector<string>& feature_blob_names, 
       Mat& feature1, Mat& feature2);
 
   FeatureExtractor* get_feature_extractor();
@@ -31,7 +31,6 @@ class Verificator {
   JointBayesian* jb_;
   SvmClassifier* svm_;
   Mat mean_;
-  Mat feature_mean_;
 private:
   static const string param_file_name_;
   static const string trained_model_file_name_;
@@ -43,14 +42,12 @@ private:
   static const string matrix_G_name_;
   static const string svm_model_file_name_;
   static const string mean_file_name_;  
-  static const string feature_mean_file_name_;
-  static const string matrix_feature_mean_name_;
 
  protected:
   void set_mean(const string& mean_file);
   void wrap_input_layer(vector<shared_ptr<vector<shared_ptr<Mat> > > >& input_channels_vec);
   void preprocess(const Mat& img, shared_ptr<vector<Mat> > input_channels, Blob<float>* input_layer);
-  void extract_feature(const Mat& image1, const Mat& image2, vector<string> feature_blob_names, 
+  void extract_feature(const Mat& image1, const Mat& image2, const vector<string>& feature_blob_names, 
       Mat& feature1, Mat& feature2);
 };
 #endif

@@ -1,28 +1,15 @@
-name: "DeepID2"
-layer {
-  name: "data1"
-  type: "Data"
-  top: "data1"
-  top: "label1"
-  data_param {
-    source: "/share/jiajian/lmdb_data/deepid2/casia_train_lmdb_1"
-    backend:LMDB
-    mean_file: "data/casia-webface/casia_train_lmdb_1.binaryproto"
-    batch_size: 128
-  }
-}
-layer {
-  name: "data2"
-  type: "Data"
-  top: "data2"
-  top: "label2"
-  data_param {
-    backend:LMDB
-    source: "/share/jiajian/lmdb_data/deepid2/casia_train_lmdb_2"
-    mean_file: "data/casia-webface/casia_train_lmdb_2.binaryproto"
-    batch_size: 128
-  }
-}
+name:"DeepID2"
+input: "data1"
+input_dim: 1
+input_dim: 3
+input_dim: 55
+input_dim: 47
+
+input: "data2"
+input_dim: 1
+input_dim: 3
+input_dim: 55
+input_dim: 47
 
 layer {
   name: "conv1"
@@ -269,33 +256,8 @@ layer {
   bottom: "fc1"
   top: "fc1"
 }
-layer {
-  name: "fc1_softmax"
-  type: "InnerProduct"
-  bottom: "fc1"
-  top: "fc1_softmax"
-  param {
-    lr_mult: 1
-    name: "fc1softmax_w"
-  }
-  param {
-    lr_mult: 2
-    name: "fc1softmax_b"
-  }
-  inner_product_param {
-    num_output: 9582
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
 
-
+# siamese network of the above
 layer {
   name: "conv1_p"
   type: "Convolution"
@@ -540,66 +502,4 @@ layer {
   type: "ReLU"
   bottom: "fc1_p"
   top: "fc1_p"
-}
-layer {
-  name: "fc1softmax_p"
-  type: "InnerProduct"
-  bottom: "fc1_p"
-  top: "fc1softmax_p"
-  param {
-    lr_mult: 1
-    name: "fc1softmax_w"
-  }
-  param {
-    lr_mult: 2
-    name: "fc1softmax_b"
-  }
-  inner_product_param {
-    num_output: 9582
-    weight_filler {
-      type: "gaussian"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
-
-layer {
-  name: "accuracy1"
-  type: "Accuracy"
-  bottom: "fc1_softmax"
-  bottom: "label1"
-  top: "accuracy1"
-  include {
-    phase: TEST
-  }
-}
-layer {
-  name: "softmax_loss1"
-  type: "SoftmaxWithLoss"
-  bottom: "fc1_softmax"
-  bottom: "label1"
-  top: "loss1"
-  loss_weight: 1
-}
-layer {
-  name: "accuracy2"
-  type: "Accuracy"
-  bottom: "fc1softmax_p"
-  bottom: "label2"
-  top: "accuracy2"
-  include {
-    phase: TEST
-  }
-}
-layer {
-  name: "softmax_loss2"
-  type: "SoftmaxWithLoss"
-  bottom: "fc1softmax_p"
-  bottom: "label2"
-  top: "loss2"
-  loss_weight: 1
 }

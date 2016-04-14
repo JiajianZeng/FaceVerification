@@ -38,6 +38,7 @@ JointBayesian::JointBayesian(const string& yaml_file_A, const string& matrix_nam
 
 /** 
 * we need to make sure x1 and x2 are both col vector
+* that's if A_ and G_ are d by d matrixes, then x1 and x2 must be d by 1
 */
 float JointBayesian::distance(const Mat& x1, const Mat& x2) {
   // actually, result is a scalar
