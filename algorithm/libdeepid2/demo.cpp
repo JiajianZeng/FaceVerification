@@ -15,7 +15,14 @@ using cv::Mat;
 using cv::Rect;
 
 int main(int argc, char** argv) {
-  string config_file("/share/jiajian/FaceRecognitionSystem/algorithm/libdeepid2/data/libdeepid2.yaml");
+  if(argc != 3) {
+    cout << "Usage: demo path_to_image1 path_to_image2" << "\n";
+    return -1;
+   }
+  char* image1_file = argv[1];
+  char* image2_file = argv[2];
+
+  string config_file("./data/libdeepid2.yaml");
   Verificator* ver = new Verificator(config_file);
   
   // feature blobs to extract
@@ -27,13 +34,21 @@ int main(int argc, char** argv) {
   
   // source images
   Mat image1, image2;
-  image1 = cv::imread("/mnt/ftp/test\ for\ face/ershijie1.jpg");
-  image2 = cv::imread("/mnt/ftp/test\ for\ face/ershijie2.jpg");
+  image1 = cv::imread(image1_file);
+  image2 = cv::imread(image2_file);
+   
+  if(image1.data == NULL) {
+     cout << "can not read image1: " << image1_file << "\n";
+     return -1; 
+  }else if(image2.data == NULL){
+     cout << "can not read image2: " << image2_file << "\n";
+     return -1;
+   }
 
   // detect faces
   vector<Rect> faces1, faces2;
-  string frontal_model("/share/jiajian/FaceRecognitionSystem/algorithm/libdeepid2/data/frontal_face.xml");
-  string profile_model("/share/jiajian/FaceRecognitionSystem/algorithm/libdeepid2/data/profile_face.xml");
+  string frontal_model("./data/frontal_face.xml");
+  string profile_model("./data/profile_face.xml");
   FaceDetector* fd = new FaceDetector(frontal_model, profile_model);
 
   fd->detect_face(image1, faces1);

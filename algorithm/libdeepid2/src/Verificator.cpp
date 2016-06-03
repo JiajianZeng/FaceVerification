@@ -143,7 +143,7 @@ void Verificator::preprocess(const Mat& img, shared_ptr<vector<Mat> > input_chan
 
   /* normalized */
   Mat sample_normalized;
-  cv::subtract(sample_float, mean_, sample_normalized);
+  //cv::subtract(sample_float, mean_, sample_normalized);
   
   /* write the separate BGR planes directly to the input layer of the network */
   //cv::split(sample_normalized, *input_channels);

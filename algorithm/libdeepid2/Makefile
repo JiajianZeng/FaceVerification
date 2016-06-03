@@ -24,13 +24,16 @@ LIBRARIES = -lcaffe \
             -lopencv_core \
             -lopencv_objdetect \
             -lopencv_imgproc \
+            -lopencv_highgui \
             -lboost_system \
             -L./lib \
+            -L . \
 
       
 .PHONY: all
-all:$(TARGET_LIB)
-
+all:demo
+demo:$(TARGET_LIB)
+	$(CC) -o demo demo.cpp $(LIBRARIES) $(INCLUDES) -ldeepid2
 $(TARGET_LIB):objs
 	$(CC) $(LDFLAGS) -Wl,-soname,$(TARGET_LIB) -o $(TARGET_LIB) $(LIBRARIES) $(OBJS)
 
