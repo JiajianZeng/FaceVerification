@@ -27,7 +27,7 @@ LIBRARIES = -lopencv_core \
             -lopencv_highgui \
             -lboost_system \
             -lcaffe \
-            -L./lib \
+            -L../caffe/build/lib\
             -L . \
 
       
@@ -44,5 +44,5 @@ objs:$(SRCS)
 
 .PHONY: clean
 clean:
-	-$(RM) $(TARGET_LIB) $(OBJS)
+	-$(RM) $(TARGET_LIB) $(OBJS) demo
 
