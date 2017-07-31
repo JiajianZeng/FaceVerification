@@ -1,0 +1,3 @@
+[submodule "algorithm/caffe"]
+	path = algorithm/caffe
+	url = https://github.com/JiajianZeng/caffe.git
