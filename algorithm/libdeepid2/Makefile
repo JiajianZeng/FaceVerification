@@ -1,4 +1,4 @@
-# compiler
+# -lcompiler
 CC = g++
 # compile flags
 CFLAGS = -fPIC -g
@@ -17,15 +17,16 @@ OBJS = $(SRCS:.cpp=.o)
 INCLUDES =  -I/usr/local/include/opencv2 \
             -I/usr/local/include/opencv \
             -I/usr/local/cuda/include \
-            -I./include \
+            -I../caffe/include \
+            -I./include
             
 # link library
-LIBRARIES = -lcaffe \
-            -lopencv_core \
+LIBRARIES = -lopencv_core \
             -lopencv_objdetect \
             -lopencv_imgproc \
             -lopencv_highgui \
             -lboost_system \
+            -lcaffe \
             -L./lib \
             -L . \
 
@@ -33,7 +34,7 @@ LIBRARIES = -lcaffe \
 .PHONY: all
 all:demo
 demo:$(TARGET_LIB)
-	$(CC) -o demo demo.cpp $(LIBRARIES) $(INCLUDES) -ldeepid2
+	$(CC) -o demo demo.cpp -ldeepid2 $(LIBRARIES) $(INCLUDES) 
 $(TARGET_LIB):objs
 	$(CC) $(LDFLAGS) -Wl,-soname,$(TARGET_LIB) -o $(TARGET_LIB) $(LIBRARIES) $(OBJS)
 
