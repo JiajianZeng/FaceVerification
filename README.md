@@ -22,3 +22,4 @@ see my demo application in ./demo.cpp for more details.
 
 plz refer to the above prerequisites's project page to install them
 
+#FaceVerification
