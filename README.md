@@ -1,12 +1,14 @@
-#FaceVerification
+# FaceVerification
+
 This project realizes the deepid2 (a face verification framework) in c++, which is efficient and lightweight.
-#prerequisites
+
+# prerequisites
 - opencv
 - boost
 - prerequisites for the successful installation of caffe
 
 plz refer to the above prerequisites' project page to install them.
-#installation of this project
+# installation of this project
 - git clone --recursive https://git.coding.net/jiajianzju/FaceVerification.git
 - cd $FACE_ROOT
 - git submodule update --remote algorithm/caffe
